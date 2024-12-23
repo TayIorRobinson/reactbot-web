@@ -1,0 +1,96 @@
+<h1>ReactBot... but as a wwwebsite</h1>
+<h2>Instructions</h2>
+<p>Since I don't want to get sued by Mr. Johns Videos himself, you'll have to grab the MP4 files yourself.</p>
+<b>Video instructions:</b> <a href="https://www.youtube.com/watch?v=8y5U-hhgc2E">https://www.youtube.com/watch?v=8y5U-hhgc2E</a>
+<ol>
+    <li>Download ReactBot from <a href="https://jacksfilmscouncil-shop.fourthwall.com/en-gbp/products/reactbot-exe">https://jacksfilmscouncil-shop.fourthwall.com/en-gbp/products/reactbot-exe</a>.</li>
+    <li>Extract the downloaded zip file</li>
+    <li>Click Choose File next to 'Select idle animation' below</li>
+    <li>Navigate to the folder where you extracted ReactBot.</li>
+    <li>From there, open the folder titled 'ReactBot_Data'</li>
+    <li>Then upload the file labeled 'sharedassets0.resource' (it should be about 34-35MB)</li>
+    <li>Click Choose File next to 'Select animations' below</li>
+    <li>Navigate back to the 'ReactBot_Data' folder</li>
+    <li>Open the 'StreamingAssets' folder and then 'GrabBag'</li>
+    <li>Select all the MP4 files (select the first one, scroll to the bottom, and hold shift while clicking the last one)</li>
+    <li>Click Open</li>
+    <li>Click Go</li>
+    <li>Click anywhere to react.</li>
+</ol>
+
+
+<table>
+    <tr>
+        <th>Select Idle animation</th>
+        <td><input type="file" id="idle" name="idle" accept="*/*" /></td>
+    </tr>
+    <tr>
+        <th>Select animations</th>
+        <td><input type="file" id="animations" name="animations" accept="video/*" multiple /></td>
+    </tr>
+</table>
+<button onclick="doFunny()">Go</button>
+
+<div id="view" onClick="doFunny()">
+    <video id="idleVid" loop autoplay muted></video>
+    <video id="animationsVid"></video>
+</div>
+
+<style>
+    body:not(.funny) #view {
+        display: none;
+    }
+    #view video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: lime;
+    }
+</style>
+
+<script>
+
+    const idle = document.getElementById('idle');
+    const idleVid = document.getElementById('idleVid');
+    const animations = document.getElementById('animations');
+    const animationsVid = document.getElementById('animationsVid');
+
+    animationsVid.onended = function() {
+        animationsVid.style.display = 'none';
+        URL.revokeObjectURL(animationsVid.src);
+        idleVid.play();
+    };
+
+    function loadVideo(file, video) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let url = URL.createObjectURL(new Blob([e.target.result]));
+            video.src = url;
+
+            video.onloadedmetadata = function() {
+                console.log(video.id, video.duration);
+                video.play();
+                video.style.display = 'block';
+            };
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    idle.onchange = function() {
+        loadVideo(idle.files[0], idleVid);
+    };
+
+
+    function doFunny() {
+        document.body.classList.add('funny');
+        let files = animations.files;
+        // pick a random file
+        let idx = Math.floor(Math.random() * files.length);
+        loadVideo(files[idx], animationsVid);
+        document.title = files[idx].name;
+    }
+
+
+</script>
